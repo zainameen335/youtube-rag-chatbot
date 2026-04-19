@@ -73,7 +73,9 @@ def get_transcript(video_id):
 
     try:
         st.write("Fetching from YouTube...")
-        transcript_list = YouTubeTranscriptApi().fetch(video_id)
+        proxy_url = os.getenv("PROXY_URL")
+        proxies = {"https": proxy_url} if proxy_url else None
+        transcript_list = YouTubeTranscriptApi(proxies=proxies).fetch(video_id)
         transcript = [{"text": chunk.text, "start": chunk.start} for chunk in transcript_list]
         with open(cache_file, "w", encoding="utf-8") as f:
             json.dump(transcript, f)
