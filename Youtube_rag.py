@@ -103,7 +103,7 @@ if st.button("Load Video"):
     if not transcript:
         st.stop()
 
-    # Build docs with timestamp metadata
+    
     docs = build_timestamp_docs(transcript, chunk_size=1000, chunk_overlap=300)
 
     with st.spinner("Building embeddings..."):
@@ -146,7 +146,7 @@ if st.session_state.video_loaded:
     if question:
         retrieved_docs = st.session_state.retriever.invoke(question)
 
-        # Prefix each chunk with its formatted timestamp
+        
         context_parts = []
         for doc in retrieved_docs:
             ts = format_timestamp(doc.metadata.get("start", 0))
@@ -164,7 +164,7 @@ if st.session_state.video_loaded:
         st.write(response.content)
 
         # show clickable YouTube links for source timestamps
-        with st.expander("📍 Source timestamps & chunks"):
+        with st.expander(" Source timestamps & chunks"):
             for doc in retrieved_docs:
                 start_sec = int(doc.metadata.get("start", 0))
                 ts = format_timestamp(start_sec)
