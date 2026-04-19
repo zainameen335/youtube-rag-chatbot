@@ -1,4 +1,4 @@
-
+from youtube_transcript_api.proxies import WebshareProxyConfig
 from youtube_transcript_api import YouTubeTranscriptApi, TranscriptsDisabled
 from youtube_transcript_api._errors import IpBlocked
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -73,9 +73,11 @@ def get_transcript(video_id):
 
     try:
         st.write("Fetching from YouTube...")
-        proxy_url = os.getenv("PROXY_URL")
-        proxies = {"https": proxy_url} if proxy_url else None
-        transcript_list = YouTubeTranscriptApi(proxies=proxies).fetch(video_id)
+        proxy_config = WebshareProxyConfig(
+            proxy_username=os.getenv("PROXY_USERNAME"),
+            proxy_password=os.getenv("PROXY_PASSWORD")
+        )
+        transcript_list = YouTubeTranscriptApi(proxy_config=proxy_config).fetch(video_id)
         transcript = [{"text": chunk.text, "start": chunk.start} for chunk in transcript_list]
         with open(cache_file, "w", encoding="utf-8") as f:
             json.dump(transcript, f)
@@ -86,6 +88,9 @@ def get_transcript(video_id):
         return None
     except IpBlocked:
         st.error("IP blocked by YouTube. Try a hotspot.")
+        return None
+    except Exception as e:
+        st.error(f"Error fetching transcript: {str(e)}")
         return None
 
 
